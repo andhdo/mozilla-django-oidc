@@ -273,7 +273,7 @@ class OIDCAuthenticationBackend(ModelBackend):
 
         # Validate the token
         payload = self.verify_token(id_token, nonce=nonce)
-
+        LOGGER.debug('> payload %s', payload)
         if payload:
             self.store_tokens(access_token, id_token)
             try:
@@ -297,11 +297,11 @@ class OIDCAuthenticationBackend(ModelBackend):
     def get_or_create_user(self, access_token, id_token, payload):
         """Returns a User instance if 1 user is found. Creates a user if not found
         and configured to do so. Returns nothing if multiple users are matched."""
-
         user_info = self.get_userinfo(access_token, id_token, payload)
-
+        #attribute_mapping = {'email': 'http://wso2.org/claims/emailaddress'}
+        #email = user_info.get(attribute_mapping['email'])
         email = user_info.get('email')
-
+        LOGGER.debug('> found userinfo %s, email %s', user_info, email)
         claims_verified = self.verify_claims(user_info)
         if not claims_verified:
             msg = 'Claims verification failed'
